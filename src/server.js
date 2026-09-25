@@ -9,10 +9,10 @@ import { logger } from './middleware/logger.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import locationRoutes from './routes/locationRoutes.js';
+import userRoutes from './routes/usersRoutes.js';
+import locationRoutes from './routes/locationsRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
-import feedbackRoutes from './routes/feedbackRoutes.js';
+import feedbackRoutes from './routes/feedbacksRoutes.js';
 import { openApiSpec } from './docs/openapi.js';
 
 const app = express();
@@ -50,11 +50,11 @@ app.use(
   }),
 );
 
-app.use(authRoutes);
-app.use(userRoutes);
-app.use(locationRoutes);
-app.use(categoryRoutes);
-app.use(feedbackRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/locations', locationRoutes);
+app.use('/api/category', categoryRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
