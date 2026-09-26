@@ -9,5 +9,7 @@ import {
 
 const router = Router();
 
+router.get('/', celebrate(feedbackQuerySchema), getFeedbacks);
+router.post('/', authenticate, celebrate(createFeedbackSchema), createFeedback);
 
 export default router;
