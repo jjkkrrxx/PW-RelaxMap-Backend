@@ -53,7 +53,7 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/locations', locationRoutes);
-app.use('/api/category', categoryRoutes);
+app.use('/api/categories', categoryRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
 
 app.use(notFoundHandler);
