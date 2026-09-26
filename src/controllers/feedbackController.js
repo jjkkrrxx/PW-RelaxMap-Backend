@@ -52,3 +52,22 @@ export const getFeedbacks = async (req, res, next) => {
 };
 
 export const createFeedback = notImplemented;
+
+export const getLastReviews = async (req, res, next) => {
+  try {
+    const reviews = await Feedback.find({
+      status: FEEDBACK_CONFIG.DEFAULT_STATUS,
+    })
+      .sort(FEEDBACK_CONFIG.SORT_ORDER)
+      .limit(6)
+      .populate({
+        path: 'locationId',
+        select: 'name type',
+        populate: { path: 'type', select: 'name kind' },
+      });
+
+    res.status(200).json({ data: reviews });
+  } catch (error) {
+    next(error);
+  }
+};
