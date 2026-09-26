@@ -23,4 +23,6 @@ const locationSchema = new Schema(
   { timestamps: true, versionKey: false },
 );
 
+locationSchema.index({ owner: 1 });
+
 export const Location = model('Location', locationSchema);
