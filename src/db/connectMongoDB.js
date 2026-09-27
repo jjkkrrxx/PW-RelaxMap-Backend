@@ -6,7 +6,6 @@ export const connectMongoDB = async () => {
     console.log('Successfully connect database');
 
     console.log(`DataBase Name: ${mongoose.connection.name}`);
-    console.log('Indexes synced successfully');
   } catch (error) {
     console.log('Failed connect database', error.message);
     throw error;
