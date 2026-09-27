@@ -7,7 +7,7 @@ import {
   clearSessionCookies,
   createSession,
   refreshSession,
-  setSessionCookies,
+  setupSession,
 } from '../services/auth.js';
 import { notImplemented } from '../utils/notImplemented.js';
 
@@ -31,7 +31,7 @@ export const registerUser = async (req, res, next) => {
     });
 
     const session = await createSession(user._id);
-    setSessionCookies(res, session);
+    setupSession(res, session);
 
     const userObj = user.toObject();
     delete userObj.password;
@@ -60,17 +60,16 @@ export const loginUser = async (req, res, next) => {
       throw createHttpError(401, 'Email or password is wrong');
     }
 
-    await Session.deleteMany({ userId: user._id });
-
     const session = await createSession(user._id);
-    setSessionCookies(res, session);
+    setupSession(res, session);
+
+    const userObj = user.toObject();
+    delete userObj.password;
 
     res.status(200).json({
       status: 200,
       message: 'Successfully logged in an user!',
-      data: {
-        accessToken: session.accessToken,
-      },
+      data: userObj,
     });
   } catch (error) {
     next(error);
@@ -98,9 +97,17 @@ export const refreshUserSession = async (req, res, next) => {
 
     const session = await refreshSession({ sessionId, refreshToken });
 
-    setSessionCookies(res, session);
-    res.status(200).end();
+    setupSession(res, session);
+    
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully refreshed a session!',
+      data: {
+        accessToken: session.accessToken,
+      },
+    });
   } catch (error) {
+    clearSessionCookies(res);
     next(error);
   }
 };
@@ -120,7 +127,7 @@ export const getSession = async (req, res, next) => {
     if (sessionId && refreshToken && isValidObjectId(sessionId)) {
       try {
         const session = await refreshSession({ sessionId, refreshToken });
-        setSessionCookies(res, session);
+        setupSession(res, session);
         return res.status(200).json({ success: true });
       } catch {
         return res.status(200).json({ success: false });
