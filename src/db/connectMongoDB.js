@@ -1,7 +1,4 @@
 import mongoose from 'mongoose';
-import { Location } from '../models/location';
-
-console.log(process.env.DB_HOST);
 
 export const connectMongoDB = async () => {
   try {
@@ -9,8 +6,6 @@ export const connectMongoDB = async () => {
     console.log('Successfully connect database');
 
     console.log(`DataBase Name: ${mongoose.connection.name}`);
-
-    await Location.syncIndexes();
     console.log('Indexes synced successfully');
   } catch (error) {
     console.log('Failed connect database', error.message);

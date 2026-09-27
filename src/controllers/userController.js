@@ -10,7 +10,8 @@ export const getUserById = notImplemented;
 export const getUserLocations = async (req, res) => {
   const { userId } = req.params;
 
-  const { page, limit } = req.query;
+  const page = Number(req.query) || 1;
+  const limit = Number(req.query) || 10;
 
   const skip = (page - 1) * limit;
 
