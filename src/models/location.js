@@ -67,7 +67,6 @@ const locationSchema = new Schema(
 );
 
 locationSchema.index({ ownerId: 1 });
-locationSchema.index({ region: 1 });
 locationSchema.index({ locationType: 1 });
 locationSchema.index({ region: 1, locationType: 1 });
 

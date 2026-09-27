@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import { Location } from '../models/location.js';
 import { notImplemented } from '../utils/notImplemented.js';
 import { saveLocationImageToCloudinary } from '../utils/saveLocationImageToCloudinary.js';
@@ -18,7 +19,6 @@ export const createLocation = async (req, res) => {
     image: result.secure_url,
     ownerId: user._id,
   });
-  console.log(location);
 
   res.status(201).json(location);
 };

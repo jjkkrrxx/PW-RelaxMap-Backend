@@ -12,7 +12,7 @@ cloudinary.config({
 
 export async function saveLocationImageToCloudinary(buffer, userId) {
   const options = {
-    folder: 'notes-app/locations',
+    folder: 'relax-map/locations',
     public_id: `location_${userId}_${Date.now()}`,
     resource_type: 'image',
     overwrite: true,
