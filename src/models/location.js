@@ -4,6 +4,19 @@ const locationSchema = new Schema(
   {
     name: {
       type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 96,
+    },
+    locationType: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
+    region: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+    name: {
+      type: String,
       trim: true,
       minLength: 3,
       maxLength: 96,
@@ -32,24 +45,12 @@ const locationSchema = new Schema(
     },
     description: {
       type: String,
-      minLength: 20,
-      maxLength: 6000,
-      trim: true,
       required: true,
+      minlength: 20,
+      maxlength: 6000,
     },
-    coordinates: {
-      lat: {
-        type: Number,
-        required: true,
-      },
-      lon: {
-        type: Number,
-        required: true,
-      },
-    },
-    ownerId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    images: {
+      type: [String],
       required: true,
     },
     feedbacksId: {
@@ -62,10 +63,7 @@ const locationSchema = new Schema(
       default: [],
     },
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
+  { timestamps: true, versionKey: false },
 );
 
 locationSchema.index({ ownerId: 1 });
