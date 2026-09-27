@@ -81,7 +81,7 @@ if (!process.argv.includes('--apply')) {
         },
       }));
 
-    await Promise.all([
+    const [deletedCategories, deletedRegions] = await Promise.all([
       Category.deleteMany({ _id: { $nin: toObjectIds(categories) } }),
       Region.deleteMany({ _id: { $nin: toObjectIds(regions) } }),
     ]);
@@ -94,7 +94,9 @@ if (!process.argv.includes('--apply')) {
     await Promise.all([Category.syncIndexes(), Region.syncIndexes()]);
 
     console.log(
-      `Seed complete. Categories: ${categoryResult.upsertedCount} inserted, ` +
+      `Removed ${deletedCategories.deletedCount} old categories and ` +
+        `${deletedRegions.deletedCount} old regions. ` +
+        `Seed complete. Categories: ${categoryResult.upsertedCount} inserted, ` +
         `${categoryResult.modifiedCount} updated; regions: ` +
         `${regionResult.upsertedCount} inserted, ` +
         `${regionResult.modifiedCount} updated.`,
