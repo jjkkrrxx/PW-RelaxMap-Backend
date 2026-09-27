@@ -16,5 +16,15 @@ import {
 
 const router = Router();
 
+router.get('/current', authenticate, getCurrentUser);
+router.patch('/current', authenticate, updateCurrentUser);
+router.patch(
+  '/current/avatar',
+  authenticate,
+  upload.single('avatar'),
+  updateUserAvatar,
+);
+router.get('/:userId/locations', celebrate(userLocationsQuerySchema), getUserLocations);
+router.get('/:userId', celebrate(userIdSchema), getUserById);
 
 export default router;
