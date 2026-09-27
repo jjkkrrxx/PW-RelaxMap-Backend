@@ -9,13 +9,21 @@ export const registerUserSchema = {
 };
 
 export const loginUserSchema = {
-  [Segments.BODY]: Joi.object({}),
+  [Segments.BODY]: Joi.object({
+    email: Joi.string().trim().lowercase().email().max(64).required(),
+    password: Joi.string().min(8).max(128).required(),
+  }),
 };
 
 export const requestResetEmailSchema = {
-  [Segments.BODY]: Joi.object({}),
+  [Segments.BODY]: Joi.object({
+    email: Joi.string().trim().lowercase().email().max(64).required(),
+  }),
 };
 
 export const resetPasswordSchema = {
-  [Segments.BODY]: Joi.object({}),
+  [Segments.BODY]: Joi.object({
+    password: Joi.string().min(8).max(128).required(),
+    token: Joi.string().required(),
+  }),
 };
