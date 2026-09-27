@@ -13,12 +13,12 @@ import { registerUserSchema } from '../validations/authValidation.js';
 
 const router = Router();
 
-router.post('/auth/register', celebrate(registerUserSchema), registerUser);
-router.post('/auth/login', loginUser);
-router.post('/auth/logout', logoutUser);
-router.post('/auth/refresh', refreshUserSession);
-router.get('/auth/session', getSession);
-router.post('/auth/request-reset-email', requestResetEmail);
-router.post('/auth/reset-password', resetPassword);
+router.post('/register', celebrate(registerUserSchema), registerUser);
+router.post('/login', loginUser);
+router.post('/logout', logoutUser);
+router.post('/refresh', refreshUserSession);
+router.get('/session', getSession);
+router.post('/request-reset-email', requestResetEmail);
+router.post('/reset-password', resetPassword);
 
 export default router;

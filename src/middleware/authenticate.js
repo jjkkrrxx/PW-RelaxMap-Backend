@@ -1,18 +1,16 @@
 import createHttpError from 'http-errors';
+import { isValidObjectId } from 'mongoose';
 import { Session } from '../models/session.js';
 import { User } from '../models/user.js';
 
 export const authenticate = async (req, res, next) => {
   const { sessionId, accessToken } = req.cookies;
 
-  if (!sessionId || !accessToken) {
+  if (!sessionId || !accessToken || !isValidObjectId(sessionId)) {
     throw createHttpError(401, 'Missing access token');
   }
 
-  const session = await Session.findOne({
-    _id: sessionId,
-    accessToken,
-  });
+  const session = await Session.findOne({ _id: sessionId, accessToken });
 
   if (!session) {
     throw createHttpError(401, 'Session not found');
