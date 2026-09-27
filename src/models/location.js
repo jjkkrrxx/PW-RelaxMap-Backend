@@ -2,19 +2,11 @@ import { model, Schema } from 'mongoose';
 
 const locationSchema = new Schema(
   {
-    name: {
+    image: {
       type: String,
-      required: true,
       trim: true,
-      minlength: 3,
-      maxlength: 96,
-    },
-    locationType: {
-      type: Schema.Types.ObjectId,
-      ref: 'Category',
       required: true,
     },
-    region: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
     name: {
       type: String,
       trim: true,
@@ -22,16 +14,12 @@ const locationSchema = new Schema(
       maxLength: 96,
       required: true,
     },
-    image: {
-      type: String,
-      trim: true,
-      required: true,
-    },
     locationType: {
       type: String,
       trim: true,
       required: true,
     },
+
     region: {
       type: String,
       trim: true,
@@ -46,11 +34,23 @@ const locationSchema = new Schema(
     description: {
       type: String,
       required: true,
-      minlength: 20,
-      maxlength: 6000,
+      minLength: 20,
+      maxLength: 6000,
+      trim: true,
     },
-    images: {
-      type: [String],
+    coordinates: {
+      lat: {
+        type: Number,
+        required: true,
+      },
+      lon: {
+        type: Number,
+        required: true,
+      },
+    },
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     feedbacksId: {
@@ -67,6 +67,8 @@ const locationSchema = new Schema(
 );
 
 locationSchema.index({ ownerId: 1 });
+locationSchema.index({ region: 1 });
+locationSchema.index({ locationType: 1 });
 locationSchema.index({ region: 1, locationType: 1 });
 
 export const Location = model('Location', locationSchema);
