@@ -102,9 +102,6 @@ export const refreshUserSession = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: 'Successfully refreshed a session!',
-      data: {
-        accessToken: session.accessToken,
-      },
     });
   } catch (error) {
     clearSessionCookies(res);
