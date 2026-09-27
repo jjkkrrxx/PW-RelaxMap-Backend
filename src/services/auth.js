@@ -1,5 +1,5 @@
+import crypto from 'node:crypto';
 import createHttpError from 'http-errors';
-import jwt from 'jsonwebtoken';
 import { isValidObjectId } from 'mongoose';
 import { FIFTEEN_MINUTES, THIRTY_DAYS } from '../constants/time.js';
 import { Session } from '../models/session.js';
@@ -11,16 +11,31 @@ const baseCookieOptions = {
   path: '/',
 };
 
+const generateToken = () => crypto.randomBytes(30).toString('base64');
+
+const generateTokens = () => {
+  const now = Date.now();
+
+  return {
+    accessToken: generateToken(),
+    refreshToken: generateToken(),
+    accessTokenValidUntil: new Date(now + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(now + THIRTY_DAYS),
+  };
+};
+
+/** Видаляє стару сесію юзера і створює нову: access 15 хв, refresh 30 днів. */
 export const createSession = async (userId) => {
-  const tokens = generateTokens(userId);
+  await Session.deleteMany({ userId });
 
   return Session.create({
     userId,
-    ...tokens,
+    ...generateTokens(),
   });
 };
 
-export const setSessionCookies = (res, session) => {
+/** Записує 3 httpOnly cookie: sessionId, accessToken, refreshToken. */
+export const setupSession = (res, session) => {
   res.cookie('sessionId', session._id.toString(), {
     ...baseCookieOptions,
     expires: session.refreshTokenValidUntil,
@@ -41,49 +56,23 @@ export const clearSessionCookies = (res) => {
   res.clearCookie('refreshToken', baseCookieOptions);
 };
 
-const generateTokens = (userId) => {
-  const accessTokenValidUntil = new Date(Date.now() + FIFTEEN_MINUTES);
-  const refreshTokenValidUntil = new Date(Date.now() + THIRTY_DAYS);
-
-  const accessToken = jwt.sign(
-    { userId: userId.toString() },
-    process.env.JWT_ACCESS_SECRET,
-    { expiresIn: FIFTEEN_MINUTES / 1000 },
-  );
-
-  const refreshToken = jwt.sign(
-    { userId: userId.toString() },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: THIRTY_DAYS / 1000 },
-  );
-
-  return {
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil,
-    refreshTokenValidUntil,
-  };
-};
-
+/** Перевіряє sessionId + refreshToken, видаляє стару сесію і створює нову. */
 export const refreshSession = async ({ sessionId, refreshToken }) => {
   if (!sessionId || !refreshToken || !isValidObjectId(sessionId)) {
-    throw createHttpError(401, 'Unauthorized');
+    throw createHttpError(401, 'Session not found');
   }
 
   const session = await Session.findOne({ _id: sessionId, refreshToken });
 
-  if (!session || session.refreshTokenValidUntil < new Date()) {
-    throw createHttpError(401, 'Unauthorized');
+  if (!session) {
+    throw createHttpError(401, 'Session not found');
   }
 
-  const tokens = generateTokens(session.userId);
+  if (session.refreshTokenValidUntil < new Date()) {
+    await Session.deleteOne({ _id: session._id });
+    throw createHttpError(401, 'Session token expired');
+  }
 
-  session.accessToken = tokens.accessToken;
-  session.refreshToken = tokens.refreshToken;
-  session.accessTokenValidUntil = tokens.accessTokenValidUntil;
-  session.refreshTokenValidUntil = tokens.refreshTokenValidUntil;
-
-  await session.save();
-
-  return session;
+  // createSession сама видаляє стару сесію цього юзера
+  return createSession(session.userId);
 };

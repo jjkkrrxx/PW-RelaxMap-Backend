@@ -6,7 +6,7 @@ import {
   clearSessionCookies,
   createSession,
   refreshSession,
-  setSessionCookies,
+  setupSession,
 } from '../services/auth.js';
 import { notImplemented } from '../utils/notImplemented.js';
 
@@ -24,7 +24,7 @@ export const registerUser = async (req, res) => {
   });
 
   const session = await createSession(user._id);
-  setSessionCookies(res, session);
+  setupSession(res, session);
 
   res.status(201).json(user);
 };
@@ -32,23 +32,29 @@ export const registerUser = async (req, res) => {
 export const loginUser = notImplemented;
 
 export const logoutUser = async (req, res) => {
-    const { sessionId } = req.cookies ?? {};
-    
-    if (sessionId && isValidObjectId(sessionId)) {
-        await Session.findByIdAndDelete(sessionId);
-    }
+  const { sessionId } = req.cookies ?? {};
 
-    clearSessionCookies(res);
-    res.status(204).end();
+  if (sessionId && isValidObjectId(sessionId)) {
+    await Session.findByIdAndDelete(sessionId);
+  }
+
+  clearSessionCookies(res);
+  res.status(204).end();
 };
 
 export const refreshUserSession = async (req, res) => {
   const { sessionId, refreshToken } = req.cookies ?? {};
 
-  const session = await refreshSession({ sessionId, refreshToken });
+  try {
+    const session = await refreshSession({ sessionId, refreshToken });
 
-  setSessionCookies(res, session);
-  res.status(200).end();
+    setupSession(res, session);
+    res.status(200).json({ message: 'Successfully refreshed a session!' });
+  } catch (error) {
+    // невалідна чи прострочена сесія → прибираємо cookies
+    clearSessionCookies(res);
+    throw error;
+  }
 };
 
 export const getSession = async (req, res) => {
@@ -65,7 +71,7 @@ export const getSession = async (req, res) => {
   if (sessionId && refreshToken && isValidObjectId(sessionId)) {
     try {
       const session = await refreshSession({ sessionId, refreshToken });
-      setSessionCookies(res, session);
+      setupSession(res, session);
       return res.status(200).json({ success: true });
     } catch {
       return res.status(200).json({ success: false });
