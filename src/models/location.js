@@ -2,9 +2,15 @@ import { model, Schema } from 'mongoose';
 
 const locationSchema = new Schema(
   {
-    name: { type: String, required: true, trim: true, minlength: 3, maxlength: 96 },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 96,
+    },
     type: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
-    region: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+    region: { type: Schema.Types.ObjectId, ref: 'Region', required: true },
     description: {
       type: String,
       required: true,

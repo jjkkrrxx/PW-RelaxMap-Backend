@@ -69,6 +69,9 @@ if (!process.argv.includes('--apply')) {
   try {
     await mongoose.connect(process.env.DB_HOST);
 
+    const toObjectIds = (records) =>
+      records.map(({ id }) => new mongoose.Types.ObjectId(id));
+
     const toUpsertOperations = (records) =>
       records.map(({ id, name, slug }) => ({
         updateOne: {
@@ -78,10 +81,17 @@ if (!process.argv.includes('--apply')) {
         },
       }));
 
+    await Promise.all([
+      Category.deleteMany({ _id: { $nin: toObjectIds(categories) } }),
+      Region.deleteMany({ _id: { $nin: toObjectIds(regions) } }),
+    ]);
+
     const [categoryResult, regionResult] = await Promise.all([
       Category.bulkWrite(toUpsertOperations(categories)),
       Region.bulkWrite(toUpsertOperations(regions)),
     ]);
+
+    await Promise.all([Category.syncIndexes(), Region.syncIndexes()]);
 
     console.log(
       `Seed complete. Categories: ${categoryResult.upsertedCount} inserted, ` +
