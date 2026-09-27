@@ -79,7 +79,7 @@ export const loginUser = async (req, res, next) => {
 export const logoutUser = async (req, res, next) => {
   try {
     const { sessionId } = req.cookies ?? {};
-    
+
     if (sessionId && isValidObjectId(sessionId)) {
       await Session.findByIdAndDelete(sessionId);
     }
@@ -98,7 +98,7 @@ export const refreshUserSession = async (req, res, next) => {
     const session = await refreshSession({ sessionId, refreshToken });
 
     setupSession(res, session);
-    
+
     res.status(200).json({
       status: 200,
       message: 'Successfully refreshed a session!',
