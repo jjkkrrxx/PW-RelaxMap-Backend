@@ -3,13 +3,66 @@ import { Location } from '../models/location.js';
 // потрібні для populate: реєструють моделі User і Feedback
 import '../models/user.js';
 import '../models/feedback.js';
-import { notImplemented } from '../utils/notImplemented.js';
 import {
   saveLocationImageToCloudinary,
   deleteImageFromCloudinary,
 } from '../utils/saveLocationImageToCloudinary.js';
 
-export const getLocations = notImplemented;
+const SORT_OPTIONS = {
+  popular: { rate: -1 },
+  rating: { rate: -1 },
+  new: { _id: -1 },
+  'name-asc': { name: 1 },
+  'name-desc': { name: -1 },
+};
+
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+export const getLocations = async (req, res) => {
+  const { region, search, sort } = req.query;
+
+  // type може прийти рядком (?type=lis) або масивом (?type=lis&type=ozero)
+  const typeList = [].concat(req.query.type ?? []);
+  const isPopular = typeList.includes('popular');
+  const types = typeList.filter((t) => t !== 'popular');
+
+  const filter = {};
+
+  if (region) filter.region = region;
+  if (types.length) filter.locationType = { $in: types };
+  if (search) {
+    filter.name = {
+      $regex: escapeRegex(search),
+      $options: 'i',
+    };
+  }
+
+  const page = Number(req.query.page) || 1;
+  const limit = isPopular ? 6 : Number(req.query.limit) || 9;
+  const skip = (page - 1) * limit;
+
+  let query = Location.find(filter).skip(skip).limit(limit);
+
+  // без sort — порядок БД (як у ТЗ)
+  const sortOrder = isPopular ? SORT_OPTIONS.popular : SORT_OPTIONS[sort];
+
+  if (sortOrder) {
+    query = query.sort(sortOrder).collation({ locale: 'uk' });
+  }
+
+  const [locations, totalLocations] = await Promise.all([
+    query,
+    Location.countDocuments(filter),
+  ]);
+
+  res.status(200).json({
+    page,
+    limit,
+    totalPages: Math.ceil(totalLocations / limit),
+    totalLocations,
+    locations,
+  });
+};
 
 export const getLocationById = async (req, res, next) => {
   try {
