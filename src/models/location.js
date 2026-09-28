@@ -2,33 +2,72 @@ import { model, Schema } from 'mongoose';
 
 const locationSchema = new Schema(
   {
+    image: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     name: {
       type: String,
-      required: true,
       trim: true,
-      minlength: 3,
-      maxlength: 96,
+      minLength: 3,
+      maxLength: 96,
+      required: true,
     },
-    type: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
-    region: { type: Schema.Types.ObjectId, ref: 'Region', required: true },
+    locationType: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+
+    region: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    rate: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 0,
+    },
     description: {
       type: String,
       required: true,
-      minlength: 20,
-      maxlength: 6000,
+      minLength: 20,
+      maxLength: 6000,
+      trim: true,
     },
-    images: {
-      type: [String],
+    coordinates: {
+      lat: {
+        type: Number,
+        required: true,
+      },
+      lon: {
+        type: Number,
+        required: true,
+      },
+    },
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-      validate: [(value) => value.length > 0, 'At least one image is required'],
     },
-    ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    rating: { type: Number, default: 0, min: 0, max: 5 },
-    reviewsCount: { type: Number, default: 0, min: 0 },
+    feedbacksId: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Feedback',
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true, versionKey: false },
 );
 
 locationSchema.index({ ownerId: 1 });
+locationSchema.index({ locationType: 1 });
+locationSchema.index({ region: 1, locationType: 1 });
 
 export const Location = model('Location', locationSchema);
