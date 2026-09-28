@@ -33,14 +33,7 @@ export const registerUser = async (req, res, next) => {
     const session = await createSession(user._id);
     setupSession(res, session);
 
-    const userObj = user.toObject();
-    delete userObj.password;
-
-    res.status(201).json({
-      status: 201,
-      message: 'Successfully registered a user!',
-      data: userObj,
-    });
+    res.status(201).json(user);
   } catch (error) {
     next(error);
   }
@@ -63,14 +56,7 @@ export const loginUser = async (req, res, next) => {
     const session = await createSession(user._id);
     setupSession(res, session);
 
-    const userObj = user.toObject();
-    delete userObj.password;
-
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully logged in an user!',
-      data: userObj,
-    });
+    res.status(200).json(user);
   } catch (error) {
     next(error);
   }
@@ -99,10 +85,7 @@ export const refreshUserSession = async (req, res, next) => {
 
     setupSession(res, session);
 
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully refreshed a session!',
-    });
+    res.status(200).json({ message: 'Successfully refreshed a session!' });
   } catch (error) {
     clearSessionCookies(res);
     next(error);
