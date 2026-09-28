@@ -1,10 +1,30 @@
 import createHttpError from 'http-errors';
 import { Location } from '../models/location.js';
+// потрібні для populate: реєструють моделі User і Feedback
+import '../models/user.js';
+import '../models/feedback.js';
 import { notImplemented } from '../utils/notImplemented.js';
 import { saveLocationImageToCloudinary } from '../utils/saveLocationImageToCloudinary.js';
 
 export const getLocations = notImplemented;
-export const getLocationById = notImplemented;
+
+export const getLocationById = async (req, res, next) => {
+  try {
+    const { locationId } = req.params;
+
+    const location = await Location.findById(locationId)
+      .populate('ownerId', 'name avatar')
+      .populate('feedbacksId');
+
+    if (!location) {
+      throw createHttpError(404, 'Location not found');
+    }
+
+    res.status(200).json(location);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const createLocation = async (req, res) => {
   const { file, user } = req;

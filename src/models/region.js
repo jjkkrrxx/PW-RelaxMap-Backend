@@ -2,10 +2,10 @@ import { model, Schema } from 'mongoose';
 
 const regionSchema = new Schema(
   {
-    name: { type: String, required: true, trim: true, maxlength: 64 },
+    region: { type: String, required: true, trim: true },
     slug: { type: String, required: true, trim: true, lowercase: true },
   },
-  { timestamps: true, versionKey: false },
+  { versionKey: false },
 );
 
 regionSchema.index({ slug: 1 }, { unique: true });

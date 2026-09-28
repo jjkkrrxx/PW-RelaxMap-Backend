@@ -19,11 +19,7 @@ import { parseCoordinates } from '../middleware/parseCoordinates.js';
 const router = Router();
 
 router.get('/locations', celebrate(locationQuerySchema), getLocations);
-router.get(
-  '/locations/:locationId',
-  celebrate(locationIdSchema),
-  getLocationById,
-);
+router.get('/:locationId', celebrate(locationIdSchema), getLocationById);
 
 router.post(
   '/',
