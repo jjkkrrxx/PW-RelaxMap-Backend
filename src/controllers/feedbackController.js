@@ -1,7 +1,5 @@
 import { Feedback } from '../models/feedback.js';
-import { notImplemented } from '../utils/notImplemented.js';
 import '../models/location.js';
-import '../models/category.js';
 
 const FEEDBACK_CONFIG = {
   DEFAULT_STATUS: 'approved',
@@ -30,8 +28,7 @@ export const getFeedbacks = async (req, res, next) => {
         .limit(currentLimit)
         .populate({
           path: 'locationId',
-          select: 'name type',
-          populate: { path: 'type', select: 'name kind' },
+          select: 'name locationType region',
         })
         .populate('owner', 'name avatar'),
       Feedback.countDocuments(filter),
@@ -51,7 +48,23 @@ export const getFeedbacks = async (req, res, next) => {
   }
 };
 
-export const createFeedback = notImplemented;
+export const createFeedback = async (req, res, next) => {
+  try {
+    const { locationId, userName, rate, description } = req.body;
+
+    const feedback = await Feedback.create({
+      locationId,
+      owner: req.user._id,
+      userName,
+      rate,
+      description,
+    });
+
+    res.status(201).json({ data: feedback });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getLastReviews = async (req, res, next) => {
   try {
@@ -62,8 +75,7 @@ export const getLastReviews = async (req, res, next) => {
       .limit(6)
       .populate({
         path: 'locationId',
-        select: 'name type',
-        populate: { path: 'type', select: 'name kind' },
+        select: 'name locationType region',
       });
 
     res.status(200).json({ data: reviews });
