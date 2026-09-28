@@ -10,7 +10,7 @@ const locationSchema = new Schema(
       maxlength: 96,
     },
     type: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
-    region: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+    region: { type: Schema.Types.ObjectId, ref: 'Region', required: true },
     description: {
       type: String,
       required: true,

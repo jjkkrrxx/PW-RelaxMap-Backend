@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import helmet from 'helmet';
@@ -18,10 +19,9 @@ import { openApiSpec } from './docs/openapi.js';
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-const corsOrigins = [
-  process.env.FRONTEND_URL,
-  'http://localhost:3000',
-].filter(Boolean);
+const corsOrigins = [process.env.FRONTEND_URL, 'http://localhost:3000'].filter(
+  Boolean,
+);
 
 app.get('/api-docs.json', (req, res) => {
   res.status(200).json(openApiSpec);

@@ -16,8 +16,12 @@ import {
 
 const router = Router();
 
-router.get('/locations', celebrate(locationQuerySchema), getLocations);
-router.get('/locations/:locationId', celebrate(locationIdSchema), getLocationById);
+router.get('/', celebrate(locationQuerySchema), getLocations);
+router.get(
+  '/locations/:locationId',
+  celebrate(locationIdSchema),
+  getLocationById,
+);
 router.post(
   '/locations',
   authenticate,
@@ -33,6 +37,5 @@ router.patch(
   celebrate(createLocationSchema),
   updateLocation,
 );
-
 
 export default router;
