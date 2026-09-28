@@ -39,14 +39,14 @@ const locationSchema = new Schema(
       trim: true,
     },
     coordinates: {
-      lat: {
-        type: Number,
-        required: true,
-      },
-      lon: {
-        type: Number,
-        required: true,
-      },
+      type: new Schema(
+        {
+          lat: { type: Number, required: true },
+          lon: { type: Number, required: true },
+        },
+        { _id: false },
+      ),
+      required: false,
     },
     ownerId: {
       type: Schema.Types.ObjectId,

@@ -258,8 +258,7 @@ export const openApiSpec = {
                   'locationType',
                   'region',
                   'description',
-                  'image',
-                  'coordinates',
+                  'images',
                 ],
                 properties: {
                   name: { type: 'string', minLength: 3, maxLength: 96 },
@@ -278,24 +277,16 @@ export const openApiSpec = {
                     minLength: 20,
                     maxLength: 6000,
                   },
-                  image: {
+                  images: {
                     type: 'string',
                     format: 'binary',
                     description: 'jpg/png <1MB',
                   },
                   coordinates: {
-                    type: 'object',
-                    properties: {
-                      lat: {
-                        type: 'number',
-                        example: 50.4501,
-                      },
-                      lon: {
-                        type: 'number',
-                        example: 30.5234,
-                      },
-                    },
-                    required: ['lat', 'lon'],
+                    type: 'string',
+                    description:
+                      "Необов'язково. JSON-рядок з lat і lon (обидва числа)",
+                    example: '{"lat":50.4501,"lon":30.5234}',
                   },
                 },
               },
@@ -304,6 +295,8 @@ export const openApiSpec = {
         },
         responses: {
           201: { description: 'Локацію успішно створено' },
+          400: { description: 'Помилка валідації або немає файлу' },
+          401: { description: 'Не авторизовано' },
         },
       },
     },
@@ -326,6 +319,8 @@ export const openApiSpec = {
             description:
               "Об'єкт локації з розгорнутими (populate) відгуками та автором",
           },
+          400: { description: 'Невалідний формат id' },
+          404: { description: 'Локацію не знайдено' },
         },
       },
       patch: {
@@ -341,7 +336,12 @@ export const openApiSpec = {
         ],
         responses: {
           200: { description: 'Локацію успішно оновлено' },
+          400: {
+            description: 'Помилка валідації або немає даних для оновлення',
+          },
+          401: { description: 'Не авторизовано' },
           403: { description: 'Дія заборонена (ви не є автором цієї локації)' },
+          404: { description: 'Локацію не знайдено' },
         },
       },
     },
