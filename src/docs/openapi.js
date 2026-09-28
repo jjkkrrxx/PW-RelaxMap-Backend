@@ -258,7 +258,8 @@ export const openApiSpec = {
                   'locationType',
                   'region',
                   'description',
-                  'images',
+                  'image',
+                  'coordinates',
                 ],
                 properties: {
                   name: { type: 'string', minLength: 3, maxLength: 96 },
@@ -277,10 +278,24 @@ export const openApiSpec = {
                     minLength: 20,
                     maxLength: 6000,
                   },
-                  images: {
+                  image: {
                     type: 'string',
                     format: 'binary',
                     description: 'jpg/png <1MB',
+                  },
+                  coordinates: {
+                    type: 'object',
+                    properties: {
+                      lat: {
+                        type: 'number',
+                        example: 50.4501,
+                      },
+                      lon: {
+                        type: 'number',
+                        example: 30.5234,
+                      },
+                    },
+                    required: ['lat', 'lon'],
                   },
                 },
               },
