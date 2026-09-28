@@ -39,11 +39,17 @@ export const updateLocationSchema = {
 export const locationQuerySchema = {
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
-    limit: Joi.number().integer().min(1).max(100).default(10),
+    limit: Joi.number().integer().min(1).max(100).default(9),
     region: Joi.string().trim(),
-    type: Joi.string().trim(),
-    search: Joi.string().max(96).allow(''),
-    sort: Joi.string().valid('popular', 'rating', 'new').default('rating'),
+    type: Joi.array().items(Joi.string().trim()).single(),
+    search: Joi.string().trim().max(96).allow(''),
+    sort: Joi.string().valid(
+      'popular',
+      'rating',
+      'new',
+      'name-asc',
+      'name-desc',
+    ),
   }),
 };
 
