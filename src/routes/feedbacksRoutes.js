@@ -13,7 +13,7 @@ import {
 
 const router = Router();
 
-router.get('/last', getLastReviews);
+router.get('/last-reviews', getLastReviews);
 router.get('/', celebrate(feedbackQuerySchema), getFeedbacks);
 router.post('/', authenticate, celebrate(createFeedbackSchema), createFeedback);
 

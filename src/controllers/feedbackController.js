@@ -1,9 +1,10 @@
+import createHttpError from 'http-errors';
 import { Feedback } from '../models/feedback.js';
-import '../models/location.js';
+import { Location } from '../models/location.js';
 
 const FEEDBACK_CONFIG = {
   DEFAULT_STATUS: 'approved',
-  SORT_ORDER: { createdAt: -1 },
+  SORT_ORDER: { _id: -1 },
   PARSE_INT_RADIX: 10,
 };
 
@@ -52,12 +53,21 @@ export const createFeedback = async (req, res, next) => {
   try {
     const { locationId, userName, rate, description } = req.body;
 
+    const location = await Location.findById(locationId);
+    if (!location) {
+      throw createHttpError(404, 'Location not found');
+    }
+
     const feedback = await Feedback.create({
       locationId,
       owner: req.user._id,
       userName,
       rate,
       description,
+    });
+
+    await Location.findByIdAndUpdate(locationId, {
+      $push: { feedbacksId: feedback._id },
     });
 
     res.status(201).json({ data: feedback });
