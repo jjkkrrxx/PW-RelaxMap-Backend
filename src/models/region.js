@@ -1,0 +1,13 @@
+import { model, Schema } from 'mongoose';
+
+const regionSchema = new Schema(
+  {
+    region: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, trim: true, lowercase: true },
+  },
+  { versionKey: false },
+);
+
+regionSchema.index({ slug: 1 }, { unique: true });
+
+export const Region = model('Region', regionSchema);
