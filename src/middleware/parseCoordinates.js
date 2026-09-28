@@ -1,6 +1,11 @@
 import createHttpError from 'http-errors';
 
 export const parseCoordinates = (req, res, next) => {
+  // Express 5: без тіла запиту req.body === undefined
+  if (!req.body) {
+    req.body = {};
+  }
+
   const { coordinates } = req.body;
 
   // поле не передали або передали порожнім — координат немає

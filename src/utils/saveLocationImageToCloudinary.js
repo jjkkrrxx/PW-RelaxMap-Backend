@@ -45,3 +45,18 @@ export async function saveLocationImageToCloudinary(buffer, userId) {
     uploadStream.end(buffer);
   });
 }
+
+/**
+ * Видаляє фото з Cloudinary за його URL.
+ * Фото з seed (ftp.goit.study) не чіпаємо — вони не в нашому Cloudinary.
+ */
+export async function deleteImageFromCloudinary(imageUrl) {
+  if (!imageUrl || !imageUrl.includes('res.cloudinary.com')) return;
+
+  // .../upload/v1790585307/relax-map/locations/location_x_123.jpg
+  //   → public_id: relax-map/locations/location_x_123
+  const match = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-z0-9]+$/i);
+  if (!match) return;
+
+  await cloudinary.uploader.destroy(match[1]);
+}
