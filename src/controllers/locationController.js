@@ -3,7 +3,10 @@ import { Location } from '../models/location.js';
 // потрібні для populate: реєструють моделі User і Feedback
 import '../models/user.js';
 import '../models/feedback.js';
-import { saveLocationImageToCloudinary } from '../utils/saveLocationImageToCloudinary.js';
+import {
+  saveLocationImageToCloudinary,
+  deleteImageFromCloudinary,
+} from '../utils/saveLocationImageToCloudinary.js';
 
 const SORT_OPTIONS = {
   popular: { rate: -1 },
@@ -134,6 +137,15 @@ export const updateLocation = async (req, res) => {
       returnDocument: 'after',
     },
   );
+
+  // нове фото вже збережено в базі — прибираємо старе з Cloudinary
+  if (file) {
+    try {
+      await deleteImageFromCloudinary(location.image);
+    } catch (error) {
+      console.error('Failed to delete old image:', error.message);
+    }
+  }
 
   res.status(200).json(updatedLocation);
 };
