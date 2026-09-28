@@ -11,6 +11,7 @@ import {
 } from '../services/auth.js';
 import { notImplemented } from '../utils/notImplemented.js';
 
+// використовується в registerUser (задача №3)
 const SALT_ROUNDS = 10;
 
 export const registerUser = notImplemented;
