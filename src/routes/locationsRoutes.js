@@ -24,7 +24,7 @@ router.get('/:locationId', celebrate(locationIdSchema), getLocationById);
 router.post(
   '/',
   authenticate,
-  upload.single('image'),
+  upload.single('images'),
   parseCoordinates,
   celebrate(createLocationSchema),
   createLocation,
@@ -33,7 +33,7 @@ router.post(
 router.patch(
   '/:locationId',
   authenticate,
-  upload.single('image'),
+  upload.single('images'),
   parseCoordinates,
   celebrate(updateLocationSchema),
   updateLocation,
