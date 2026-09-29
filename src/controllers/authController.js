@@ -14,7 +14,31 @@ import { notImplemented } from '../utils/notImplemented.js';
 // використовується в registerUser (задача №3)
 const SALT_ROUNDS = 10;
 
-export const registerUser = notImplemented;
+export const registerUser = async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw createHttpError(409, 'Email in use');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    const session = await createSession(user._id);
+    setupSession(res, session);
+
+    res.status(201).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const loginUser = async (req, res, next) => {
   try {
