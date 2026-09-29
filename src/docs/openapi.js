@@ -375,7 +375,7 @@ export const openApiSpec = {
         responses: {
           200: {
             description:
-              'Пагінований список відгуків (data, page, limit, total, totalPages)',
+              'Пагінований список відгуків (page, limit, totalPages, totalFeedbacks, feedbacks)',
           },
         },
       },
@@ -404,6 +404,12 @@ export const openApiSpec = {
         },
         responses: {
           201: { description: 'Відгук створено та відправлено на модерацію' },
+          400: {
+            description:
+              'Помилка валідації (locationId, userName, rate, description)',
+          },
+          401: { description: 'Не авторизовано' },
+          404: { description: 'Локацію не знайдено' },
         },
       },
     },
