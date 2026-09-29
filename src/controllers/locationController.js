@@ -70,7 +70,8 @@ export const getLocationById = async (req, res, next) => {
 
     const location = await Location.findById(locationId)
       .populate('ownerId', 'name avatar')
-      .populate('feedbacksId');
+      // лише схвалені відгуки: нові (pending) з'являться після модерації
+      .populate({ path: 'feedbacksId', match: { status: 'approved' } });
 
     if (!location) {
       throw createHttpError(404, 'Location not found');
