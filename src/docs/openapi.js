@@ -163,6 +163,7 @@ export const openApiSpec = {
         ],
         responses: {
           200: { description: 'Повертає name, avatar, articlesAmount' },
+          400: { description: 'Невалідний формат id' },
           404: { description: 'Користувача не знайдено' },
         },
       },
@@ -195,6 +196,9 @@ export const openApiSpec = {
         ],
         responses: {
           200: { description: 'Масив локацій юзера з пагінацією' },
+          400: {
+            description: 'Невалідний формат id або параметрів пагінації',
+          },
         },
       },
     },
