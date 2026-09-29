@@ -8,8 +8,8 @@ export const openApiSpec = {
   },
   servers: [
     {
-      url: 'http://localhost:3000',
-      description: 'Локальний сервер розробки',
+      url: '/',
+      description: 'Поточний сервер',
     },
   ],
   paths: {
@@ -348,6 +348,37 @@ export const openApiSpec = {
 
     // 10. Учасник №12 (Відгуки)
     '/api/feedbacks': {
+      get: {
+        summary: 'Список схвалених відгуків з пагінацією (Public)',
+        tags: ['Feedbacks'],
+        parameters: [
+          {
+            name: 'locationId',
+            in: 'query',
+            required: false,
+            schema: { type: 'string' },
+            description: 'Фільтр за локацією (валідний MongoDB id)',
+          },
+          {
+            name: 'page',
+            in: 'query',
+            required: false,
+            schema: { type: 'integer', minimum: 1, default: 1 },
+          },
+          {
+            name: 'limit',
+            in: 'query',
+            required: false,
+            schema: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
+          },
+        ],
+        responses: {
+          200: {
+            description:
+              'Пагінований список відгуків (page, limit, totalPages, totalFeedbacks, feedbacks)',
+          },
+        },
+      },
       post: {
         summary: 'Створення відгуку до місця на модерацію (Private)',
         tags: ['Feedbacks'],
@@ -373,6 +404,12 @@ export const openApiSpec = {
         },
         responses: {
           201: { description: 'Відгук створено та відправлено на модерацію' },
+          400: {
+            description:
+              'Помилка валідації (locationId, userName, rate, description)',
+          },
+          401: { description: 'Не авторизовано' },
+          404: { description: 'Локацію не знайдено' },
         },
       },
     },
