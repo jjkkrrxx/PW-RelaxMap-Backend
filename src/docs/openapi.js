@@ -399,7 +399,7 @@ export const openApiSpec = {
                     description: 'Валідний MongoDB id',
                   },
                   userName: { type: 'string', minLength: 2, maxLength: 32 },
-                  rate: { type: 'integer', minimum: 1, maximum: 5 },
+                  rate: { type: 'number', minimum: 1, maximum: 5 },
                   description: { type: 'string', minLength: 1, maxLength: 200 },
                 },
               },
