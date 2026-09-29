@@ -4,7 +4,7 @@ import { Location } from '../models/location.js';
 import { notImplemented } from '../utils/notImplemented.js';
 
 export const getCurrentUser = async (req, res) => {
-  res.status(200).json(req.user);
+  res.status(200).json({ data: req.user });
 };
 
 export const updateCurrentUser = notImplemented;
@@ -23,9 +23,11 @@ export const getUserById = async (req, res) => {
   }
 
   res.status(200).json({
-    name: user.name,
-    avatar: user.avatar,
-    articlesAmount,
+    data: {
+      name: user.name,
+      avatar: user.avatar,
+      articlesAmount,
+    },
   });
 };
 
@@ -49,10 +51,10 @@ export const getUserLocations = async (req, res) => {
   const totalPages = Math.ceil(totalLocations / limit);
 
   res.status(200).json({
+    data: locations,
     page,
     limit,
     totalPages,
-    totalLocations,
-    locations,
+    total: totalLocations,
   });
 };

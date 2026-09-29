@@ -35,11 +35,11 @@ export const getFeedbacks = async (req, res, next) => {
     ]);
 
     res.status(200).json({
+      data: feedbacks,
       page,
       limit,
       totalPages: Math.ceil(totalFeedbacks / limit),
-      totalFeedbacks,
-      feedbacks,
+      total: totalFeedbacks,
     });
   } catch (error) {
     next(error);
@@ -67,7 +67,7 @@ export const createFeedback = async (req, res, next) => {
       $push: { feedbacksId: feedback._id },
     });
 
-    res.status(201).json(feedback);
+    res.status(201).json({ data: feedback });
   } catch (error) {
     next(error);
   }
@@ -85,7 +85,7 @@ export const getLastReviews = async (req, res, next) => {
         select: 'name locationType region',
       });
 
-    res.status(200).json(reviews);
+    res.status(200).json({ data: reviews });
   } catch (error) {
     next(error);
   }

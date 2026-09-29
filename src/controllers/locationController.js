@@ -56,11 +56,11 @@ export const getLocations = async (req, res) => {
   ]);
 
   res.status(200).json({
+    data: locations,
     page,
     limit,
     totalPages: Math.ceil(totalLocations / limit),
-    totalLocations,
-    locations,
+    total: totalLocations,
   });
 };
 
@@ -77,7 +77,7 @@ export const getLocationById = async (req, res, next) => {
       throw createHttpError(404, 'Location not found');
     }
 
-    res.status(200).json(location);
+    res.status(200).json({ data: location });
   } catch (error) {
     next(error);
   }
@@ -97,7 +97,7 @@ export const createLocation = async (req, res) => {
     ownerId: user._id,
   });
 
-  res.status(201).json(location);
+  res.status(201).json({ data: location });
 };
 
 export const updateLocation = async (req, res) => {
@@ -148,5 +148,5 @@ export const updateLocation = async (req, res) => {
     }
   }
 
-  res.status(200).json(updatedLocation);
+  res.status(200).json({ data: updatedLocation });
 };
