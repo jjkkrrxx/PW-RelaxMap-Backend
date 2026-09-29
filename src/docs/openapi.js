@@ -348,6 +348,37 @@ export const openApiSpec = {
 
     // 10. Учасник №12 (Відгуки)
     '/api/feedbacks': {
+      get: {
+        summary: 'Список схвалених відгуків з пагінацією (Public)',
+        tags: ['Feedbacks'],
+        parameters: [
+          {
+            name: 'locationId',
+            in: 'query',
+            required: false,
+            schema: { type: 'string' },
+            description: 'Фільтр за локацією (валідний MongoDB id)',
+          },
+          {
+            name: 'page',
+            in: 'query',
+            required: false,
+            schema: { type: 'integer', minimum: 1, default: 1 },
+          },
+          {
+            name: 'limit',
+            in: 'query',
+            required: false,
+            schema: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
+          },
+        ],
+        responses: {
+          200: {
+            description:
+              'Пагінований список відгуків (data, page, limit, total, totalPages)',
+          },
+        },
+      },
       post: {
         summary: 'Створення відгуку до місця на модерацію (Private)',
         tags: ['Feedbacks'],
