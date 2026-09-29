@@ -8,8 +8,8 @@ export const openApiSpec = {
   },
   servers: [
     {
-      url: 'http://localhost:3000',
-      description: 'Локальний сервер розробки',
+      url: '/',
+      description: 'Поточний сервер',
     },
   ],
   paths: {
