@@ -4,7 +4,10 @@ export const openApiSpec = {
     title: 'RelaxMap / Природні Мандри API',
     version: '1.0.0',
     description:
-      'Технічна документація ендпоінтів бекенду для проєкту RelaxMap',
+      'Технічна документація ендпоінтів бекенду для проєкту RelaxMap.\n\n' +
+      "Формат успішних відповідей: один об'єкт — { data: {...} }; " +
+      'список з пагінацією — { data: [...], page, limit, totalPages, total }. ' +
+      'Помилки — { message }.',
   },
   servers: [
     {
@@ -49,7 +52,10 @@ export const openApiSpec = {
           },
         },
         responses: {
-          201: { description: 'Користувача створено успішно' },
+          201: {
+            description:
+              'Користувача створено, повертає { data: user }, сесія в cookie',
+          },
           400: { description: 'Помилка валідації celebrate (ліміти довжини)' },
           409: { description: 'Email already in use (Email зайнятий)' },
         },
@@ -78,7 +84,8 @@ export const openApiSpec = {
         },
         responses: {
           200: {
-            description: "Успішний вхід, повертає об'єкт user, сесія в cookie",
+            description:
+              'Успішний вхід, повертає { data: user }, сесія в cookie',
           },
           401: { description: 'Невірно вказано email або password' },
         },
@@ -91,7 +98,10 @@ export const openApiSpec = {
         summary: 'Оновлення токенів сесії (Private, за куками)',
         tags: ['Auth'],
         responses: {
-          200: { description: 'Successfully refreshed a session!' },
+          200: {
+            description:
+              'Повертає { message: "Successfully refreshed a session!" }, нові cookies',
+          },
           401: { description: 'Refresh token протух або невалідний' },
         },
       },
@@ -119,14 +129,23 @@ export const openApiSpec = {
         tags: ['Data'],
         responses: {
           200: {
-            description: "Повертає об'єкт з масивами regions та locationTypes",
+            description:
+              'Повертає { data: { locationTypes: [...], regions: [...] } }',
             content: {
               'application/json': {
                 schema: {
                   type: 'object',
                   properties: {
-                    regions: { type: 'array', items: { type: 'object' } },
-                    locationTypes: { type: 'array', items: { type: 'object' } },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        locationTypes: {
+                          type: 'array',
+                          items: { type: 'object' },
+                        },
+                        regions: { type: 'array', items: { type: 'object' } },
+                      },
+                    },
                   },
                 },
               },
@@ -142,7 +161,7 @@ export const openApiSpec = {
         summary: 'Дані поточного авторизованого користувача (Private)',
         tags: ['Users'],
         responses: {
-          200: { description: "Повертає об'єкт профілю поточного юзера" },
+          200: { description: 'Повертає { data: user } поточного юзера' },
           401: { description: 'Відсутній або протухлий token' },
         },
       },
@@ -162,7 +181,9 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          200: { description: 'Повертає name, avatar, articlesAmount' },
+          200: {
+            description: 'Повертає { data: { name, avatar, articlesAmount } }',
+          },
           400: { description: 'Невалідний формат id' },
           404: { description: 'Користувача не знайдено' },
         },
@@ -185,17 +206,20 @@ export const openApiSpec = {
             name: 'page',
             in: 'query',
             required: false,
-            schema: { type: 'integer', default: 1 },
+            schema: { type: 'number', default: 1 },
           },
           {
             name: 'limit',
             in: 'query',
             required: false,
-            schema: { type: 'integer', default: 9 },
+            schema: { type: 'number', default: 9 },
           },
         ],
         responses: {
-          200: { description: 'Масив локацій юзера з пагінацією' },
+          200: {
+            description:
+              'Повертає { data: [локації], page, limit, totalPages, total }',
+          },
           400: {
             description: 'Невалідний формат id або параметрів пагінації',
           },
@@ -214,13 +238,13 @@ export const openApiSpec = {
             name: 'page',
             in: 'query',
             required: false,
-            schema: { type: 'integer' },
+            schema: { type: 'number' },
           },
           {
             name: 'limit',
             in: 'query',
             required: false,
-            schema: { type: 'integer' },
+            schema: { type: 'number' },
           },
           {
             name: 'region',
@@ -244,7 +268,10 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          200: { description: 'Відфільтрований список локацій' },
+          200: {
+            description:
+              'Повертає { data: [локації], page, limit, totalPages, total }',
+          },
         },
       },
       post: {
@@ -298,7 +325,7 @@ export const openApiSpec = {
           },
         },
         responses: {
-          201: { description: 'Локацію успішно створено' },
+          201: { description: 'Локацію створено, повертає { data: location }' },
           400: { description: 'Помилка валідації або немає файлу' },
           401: { description: 'Не авторизовано' },
         },
@@ -321,7 +348,7 @@ export const openApiSpec = {
         responses: {
           200: {
             description:
-              "Об'єкт локації з розгорнутими (populate) відгуками та автором",
+              'Повертає { data: location } з розгорнутими (populate) схваленими відгуками та автором',
           },
           400: { description: 'Невалідний формат id' },
           404: { description: 'Локацію не знайдено' },
@@ -339,7 +366,7 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          200: { description: 'Локацію успішно оновлено' },
+          200: { description: 'Локацію оновлено, повертає { data: location }' },
           400: {
             description: 'Помилка валідації або немає даних для оновлення',
           },
@@ -367,19 +394,19 @@ export const openApiSpec = {
             name: 'page',
             in: 'query',
             required: false,
-            schema: { type: 'integer', minimum: 1, default: 1 },
+            schema: { type: 'number', minimum: 1, default: 1 },
           },
           {
             name: 'limit',
             in: 'query',
             required: false,
-            schema: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
+            schema: { type: 'number', minimum: 1, maximum: 100, default: 10 },
           },
         ],
         responses: {
           200: {
             description:
-              'Пагінований список відгуків (page, limit, totalPages, totalFeedbacks, feedbacks)',
+              'Повертає { data: [відгуки], page, limit, totalPages, total }',
           },
         },
       },
@@ -407,7 +434,10 @@ export const openApiSpec = {
           },
         },
         responses: {
-          201: { description: 'Відгук створено та відправлено на модерацію' },
+          201: {
+            description:
+              'Відгук створено (status: pending), повертає { data: feedback }',
+          },
           400: {
             description:
               'Помилка валідації (locationId, userName, rate, description)',
@@ -423,7 +453,10 @@ export const openApiSpec = {
           'Отримання 5-6 останніх відгуків для головної сторінки (Public)',
         tags: ['Feedbacks'],
         responses: {
-          200: { description: 'Список останніх відгуків з populate локацій' },
+          200: {
+            description:
+              'Повертає { data: [до 6 схвалених відгуків з populate локацій] }',
+          },
         },
       },
     },

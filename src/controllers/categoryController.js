@@ -14,16 +14,18 @@ export const getCategoriesAndRegions = async (req, res) => {
   ]);
 
   res.status(200).json({
-    locationTypes: types.map(({ _id, type, slug, shortDescription }) => ({
-      _id,
-      name: type,
-      slug,
-      shortDescription,
-    })),
-    regions: regions.map(({ _id, region, slug }) => ({
-      _id,
-      name: region,
-      slug,
-    })),
+    data: {
+      locationTypes: types.map(({ _id, type, slug, shortDescription }) => ({
+        _id,
+        name: type,
+        slug,
+        shortDescription,
+      })),
+      regions: regions.map(({ _id, region, slug }) => ({
+        _id,
+        name: region,
+        slug,
+      })),
+    },
   });
 };
