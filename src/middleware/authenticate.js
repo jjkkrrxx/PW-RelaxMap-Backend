@@ -8,11 +8,11 @@ export const authenticate = async (req, res, next) => {
     const { sessionId, accessToken } = req.cookies;
 
     if (!sessionId || !accessToken) {
-      throw createHttpError(401, 'Missing access token');
+      throw createHttpError(401, 'Відсутній токен доступу');
     }
 
     if (!isValidObjectId(sessionId)) {
-      throw createHttpError(401, 'Invalid session id');
+      throw createHttpError(401, 'Невірний ідентифікатор сесії');
     }
 
     const session = await Session.findOne({
@@ -21,17 +21,17 @@ export const authenticate = async (req, res, next) => {
     });
 
     if (!session) {
-      throw createHttpError(401, 'Session not found');
+      throw createHttpError(401, 'Сесію не знайдено');
     }
 
     if (session.accessTokenValidUntil < new Date()) {
-      throw createHttpError(401, 'Access token expired');
+      throw createHttpError(401, 'Термін дії токена доступу закінчився');
     }
 
     const user = await User.findById(session.userId);
 
     if (!user) {
-      throw createHttpError(401, 'User not found');
+      throw createHttpError(401, 'Користувача не знайдено');
     }
 
     req.user = user;

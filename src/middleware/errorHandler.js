@@ -10,7 +10,7 @@ const validationMessage = (err) => {
     }
   }
 
-  return 'Validation failed';
+  return 'Перевірте правильність введених даних';
 };
 
 export const errorHandler = (err, req, res, next) => {
@@ -30,8 +30,8 @@ export const errorHandler = (err, req, res, next) => {
 
   if (err.code === 11000) {
     const message = err.keyValue?.email
-      ? 'Email already in use'
-      : 'Duplicate key';
+      ? 'Ця електронна адреса вже використовується'
+      : 'Такий запис уже існує';
 
     return res.status(409).json({ message });
   }
@@ -46,7 +46,7 @@ export const errorHandler = (err, req, res, next) => {
 
   if (err instanceof mongoose.Error.CastError) {
     return res.status(400).json({
-      message: 'Invalid id',
+      message: 'Некоректний ідентифікатор',
     });
   }
 
@@ -54,7 +54,7 @@ export const errorHandler = (err, req, res, next) => {
 
   res.status(500).json({
     message: isProd
-      ? 'Something went wrong. Please try again later.'
+      ? 'Сталася помилка. Спробуйте ще раз пізніше.'
       : err.message,
   });
 };

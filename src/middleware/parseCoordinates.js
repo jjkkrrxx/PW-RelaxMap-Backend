@@ -19,7 +19,7 @@ export const parseCoordinates = (req, res, next) => {
     try {
       req.body.coordinates = JSON.parse(coordinates);
     } catch {
-      return next(createHttpError(400, 'coordinates must be valid JSON'));
+      return next(createHttpError(400, 'Координати мають бути коректним JSON'));
     }
   }
 

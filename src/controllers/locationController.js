@@ -74,7 +74,7 @@ export const getLocationById = async (req, res, next) => {
       .populate({ path: 'feedbacksId', match: { status: 'approved' } });
 
     if (!location) {
-      throw createHttpError(404, 'Location not found');
+      throw createHttpError(404, 'Локацію не знайдено');
     }
 
     res.status(200).json({ data: location });
@@ -87,7 +87,7 @@ export const createLocation = async (req, res) => {
   const { file, user } = req;
 
   if (!req.file) {
-    throw createHttpError(400, 'No file');
+    throw createHttpError(400, 'Файл не завантажено');
   }
   const result = await saveLocationImageToCloudinary(file.buffer, user._id);
 
@@ -106,13 +106,13 @@ export const updateLocation = async (req, res) => {
   const location = await Location.findById(locationId);
 
   if (!location) {
-    throw createHttpError(404, 'Location not found');
+    throw createHttpError(404, 'Локацію не знайдено');
   }
 
   const { user, file } = req;
 
   if (location.ownerId.toString() !== user._id.toString()) {
-    throw createHttpError(403, 'You are not allowed to update this location');
+    throw createHttpError(403, 'У вас немає прав для редагування цієї локації');
   }
 
   const updatedInfo = {
@@ -126,7 +126,7 @@ export const updateLocation = async (req, res) => {
   }
 
   if (!file && Object.keys(updatedInfo).length === 0) {
-    throw createHttpError(400, 'No update data provided');
+    throw createHttpError(400, 'Дані для оновлення не надано');
   }
 
   const updatedLocation = await Location.findByIdAndUpdate(
@@ -144,7 +144,7 @@ export const updateLocation = async (req, res) => {
     try {
       await deleteImageFromCloudinary(location.image);
     } catch (error) {
-      console.error('Failed to delete old image:', error.message);
+      console.error('Не вдалося видалити старе зображення:', error.message);
     }
   }
 

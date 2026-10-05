@@ -11,7 +11,7 @@ export const upload = multer({
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(createHttpError(400, 'Only images allowed'), false);
+      cb(createHttpError(400, 'Дозволені лише зображення'), false);
     }
   },
 });

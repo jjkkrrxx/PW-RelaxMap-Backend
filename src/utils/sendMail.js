@@ -4,14 +4,14 @@ import createHttpError from 'http-errors';
 const isMailConfigured = () =>
   Boolean(
     process.env.SMTP_HOST &&
-      process.env.SMTP_PORT &&
-      process.env.SMTP_USER &&
-      process.env.SMTP_PASSWORD,
+    process.env.SMTP_PORT &&
+    process.env.SMTP_USER &&
+    process.env.SMTP_PASSWORD,
   );
 
 export const sendEmail = async (options) => {
   if (!isMailConfigured()) {
-    throw createHttpError(500, 'SMTP is not configured');
+    throw createHttpError(500, 'SMTP не налаштовано');
   }
 
   const transporter = nodemailer.createTransport({

@@ -20,7 +20,7 @@ export const registerUser = async (req, res, next) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw createHttpError(409, 'Email in use');
+      throw createHttpError(409, 'Ця електронна адреса вже використовується');
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -46,12 +46,12 @@ export const loginUser = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      throw createHttpError(401, 'Email or password is wrong');
+      throw createHttpError(401, 'Невірна електронна адреса або пароль');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw createHttpError(401, 'Email or password is wrong');
+      throw createHttpError(401, 'Невірна електронна адреса або пароль');
     }
 
     const session = await createSession(user._id);
@@ -86,7 +86,7 @@ export const refreshUserSession = async (req, res, next) => {
 
     setupSession(res, session);
 
-    res.status(200).json({ message: 'Successfully refreshed a session!' });
+    res.status(200).json({ message: 'Сесію успішно оновлено' });
   } catch (error) {
     clearSessionCookies(res);
     next(error);

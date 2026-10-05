@@ -4,17 +4,17 @@ import createHttpError from 'http-errors';
 const isCloudinaryConfigured = () =>
   Boolean(
     process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET,
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET,
   );
 
 export const saveFileToCloudinary = (file, folder = 'avatars') => {
   if (!isCloudinaryConfigured()) {
-    throw createHttpError(500, 'Cloudinary is not configured');
+    throw createHttpError(500, 'Cloudinary не налаштовано');
   }
 
   if (!file) {
-    throw createHttpError(400, 'File is required');
+    throw createHttpError(400, 'Файл є обов’язковим');
   }
 
   cloudinary.config({
@@ -28,7 +28,7 @@ export const saveFileToCloudinary = (file, folder = 'avatars') => {
       { folder },
       (error, result) => {
         if (error || !result) {
-          reject(createHttpError(500, 'Failed to upload file'));
+          reject(createHttpError(500, 'Не вдалося завантажити файл'));
           return;
         }
         resolve(result.secure_url);

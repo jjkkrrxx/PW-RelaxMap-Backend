@@ -52,7 +52,7 @@ export const createFeedback = async (req, res, next) => {
 
     const location = await Location.findById(locationId);
     if (!location) {
-      throw createHttpError(404, 'Location not found');
+      throw createHttpError(404, 'Локацію не знайдено');
     }
 
     const feedback = await Feedback.create({
