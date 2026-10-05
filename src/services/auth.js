@@ -59,18 +59,18 @@ export const clearSessionCookies = (res) => {
 /** Перевіряє sessionId + refreshToken, видаляє стару сесію і створює нову. */
 export const refreshSession = async ({ sessionId, refreshToken }) => {
   if (!sessionId || !refreshToken || !isValidObjectId(sessionId)) {
-    throw createHttpError(401, 'Session not found');
+    throw createHttpError(401, 'Сесію не знайдено');
   }
 
   const session = await Session.findOne({ _id: sessionId, refreshToken });
 
   if (!session) {
-    throw createHttpError(401, 'Session not found');
+    throw createHttpError(401, 'Сесію не знайдено');
   }
 
   if (session.refreshTokenValidUntil < new Date()) {
     await Session.deleteOne({ _id: session._id });
-    throw createHttpError(401, 'Session token expired');
+    throw createHttpError(401, 'Термін дії токена сесії закінчився');
   }
 
   // createSession сама видаляє стару сесію цього юзера

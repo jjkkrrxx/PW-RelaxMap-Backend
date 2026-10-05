@@ -4,7 +4,9 @@ import { isValidObjectId } from 'mongoose';
 const objectId = Joi.string().hex().length(24);
 
 const objectIdValidator = (value, helpers) => {
-  return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
+  return !isValidObjectId(value)
+    ? helpers.message('Некоректний формат ідентифікатора')
+    : value;
 };
 
 export const createLocationSchema = {

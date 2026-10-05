@@ -24,7 +24,7 @@ export const updateCurrentUser = async (req, res) => {
 /** Оновлює аватар поточного юзера: нове фото в Cloudinary, старе — видаляємо. */
 export const updateUserAvatar = async (req, res) => {
   if (!req.file) {
-    throw createHttpError(400, 'Avatar file is required');
+    throw createHttpError(400, 'Файл аватара є обов’язковим');
   }
 
   const previousAvatar = req.user.avatar;
@@ -55,7 +55,7 @@ export const getUserById = async (req, res) => {
   ]);
 
   if (!user) {
-    throw createHttpError(404, 'User not found');
+    throw createHttpError(404, 'Користувача не знайдено');
   }
 
   res.status(200).json({
