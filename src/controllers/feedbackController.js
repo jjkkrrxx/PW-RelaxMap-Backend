@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 import { Feedback } from '../models/feedback.js';
 import { Location } from '../models/location.js';
 
@@ -48,8 +49,17 @@ export const getFeedbacks = async (req, res, next) => {
 
 // Середній рейтинг локації за схваленими відгуками, до одного знака після коми.
 const getLocationRate = async (locationId) => {
+  const targetId = mongoose.Types.ObjectId.isValid(locationId)
+    ? new mongoose.Types.ObjectId(locationId)
+    : locationId;
+
   const [stats] = await Feedback.aggregate([
-    { $match: { locationId, status: FEEDBACK_CONFIG.DEFAULT_STATUS } },
+    {
+      $match: {
+        locationId: targetId,
+        status: FEEDBACK_CONFIG.DEFAULT_STATUS,
+      },
+    },
     { $group: { _id: null, average: { $avg: '$rate' } } },
   ]);
 
