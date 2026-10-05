@@ -469,7 +469,7 @@ export const openApiSpec = {
         },
       },
       post: {
-        summary: 'Створення відгуку до місця на модерацію (Private)',
+        summary: 'Створення відгуку до місця (Private)',
         tags: ['Feedbacks'],
         requestBody: {
           required: true,
@@ -494,7 +494,7 @@ export const openApiSpec = {
         responses: {
           201: {
             description:
-              'Відгук створено (status: pending), повертає { data: feedback }',
+              'Відгук створено (status: approved), рейтинг локації перераховано; повертає { data: feedback }',
           },
           400: {
             description:
