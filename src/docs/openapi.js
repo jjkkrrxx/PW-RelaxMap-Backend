@@ -4,10 +4,7 @@ export const openApiSpec = {
     title: 'RelaxMap / Природні Мандри API',
     version: '1.0.0',
     description:
-      'Технічна документація ендпоінтів бекенду для проєкту RelaxMap.\n\n' +
-      "Формат успішних відповідей: один об'єкт — { data: {...} }; " +
-      'список з пагінацією — { data: [...], page, limit, totalPages, total }. ' +
-      'Помилки — { message }.',
+      'Технічна документація ендпоінтів бекенду для проєкту RelaxMap.\n\n',
   },
   servers: [
     {
@@ -155,13 +152,74 @@ export const openApiSpec = {
       },
     },
 
-    // 6. Учасник №5 (Поточний юзер)
+    // 6. Учасник №5 (Поточний юзер) + додаткове завдання (зміна імені й аватара)
     '/api/users/current': {
       get: {
         summary: 'Дані поточного авторизованого користувача (Private)',
         tags: ['Users'],
         responses: {
           200: { description: 'Повертає { data: user } поточного юзера' },
+          401: { description: 'Відсутній або протухлий token' },
+        },
+      },
+      patch: {
+        summary: 'Зміна імені поточного користувача (Private)',
+        tags: ['Users'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['name'],
+                properties: {
+                  name: {
+                    type: 'string',
+                    minLength: 2,
+                    maxLength: 32,
+                    example: 'Андрій',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Повертає { data: user } з новим іменем' },
+          400: { description: "Ім'я відсутнє або не 2–32 символи" },
+          401: { description: 'Відсутній або протухлий token' },
+        },
+      },
+    },
+
+    '/api/users/current/avatar': {
+      patch: {
+        summary: 'Зміна аватара поточного користувача (Private)',
+        tags: ['Users'],
+        requestBody: {
+          required: true,
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                required: ['avatar'],
+                properties: {
+                  avatar: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'Зображення jpg або png, до 1 МБ',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description:
+              'Повертає { data: user } з новою адресою avatar (Cloudinary)',
+          },
+          400: { description: 'Файл відсутній, не jpg/png або більше 1 МБ' },
           401: { description: 'Відсутній або протухлий token' },
         },
       },
