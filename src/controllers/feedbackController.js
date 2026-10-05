@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 import { Feedback } from '../models/feedback.js';
 import { Location } from '../models/location.js';
 
@@ -46,6 +47,25 @@ export const getFeedbacks = async (req, res, next) => {
   }
 };
 
+// Середній рейтинг локації за схваленими відгуками, до одного знака після коми.
+const getLocationRate = async (locationId) => {
+  const targetId = mongoose.Types.ObjectId.isValid(locationId)
+    ? new mongoose.Types.ObjectId(locationId)
+    : locationId;
+
+  const [stats] = await Feedback.aggregate([
+    {
+      $match: {
+        locationId: targetId,
+        status: FEEDBACK_CONFIG.DEFAULT_STATUS,
+      },
+    },
+    { $group: { _id: null, average: { $avg: '$rate' } } },
+  ]);
+
+  return stats ? Math.round(stats.average * 10) / 10 : 0;
+};
+
 export const createFeedback = async (req, res, next) => {
   try {
     const { locationId, userName, rate, description } = req.body;
@@ -55,16 +75,22 @@ export const createFeedback = async (req, res, next) => {
       throw createHttpError(404, 'Location not found');
     }
 
+    // відгук видно одразу: сторінка локації оновлює список і рейтинг без модерації
     const feedback = await Feedback.create({
       locationId,
       owner: req.user._id,
       userName,
       rate,
       description,
+      status: FEEDBACK_CONFIG.DEFAULT_STATUS,
     });
+
+    // загальний рейтинг локації перераховуємо разом із додаванням відгуку
+    const locationRate = await getLocationRate(location._id);
 
     await Location.findByIdAndUpdate(locationId, {
       $push: { feedbacksId: feedback._id },
+      $set: { rate: locationRate },
     });
 
     res.status(201).json({ data: feedback });
