@@ -1,14 +1,50 @@
 import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
 import { Location } from '../models/location.js';
-import { notImplemented } from '../utils/notImplemented.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { deleteImageFromCloudinary } from '../utils/saveLocationImageToCloudinary.js';
 
 export const getCurrentUser = async (req, res) => {
   res.status(200).json({ data: req.user });
 };
 
-export const updateCurrentUser = notImplemented;
-export const updateUserAvatar = notImplemented;
+/** Оновлює ім'я поточного юзера. Валідація (2–32 символи) — у celebrate. */
+export const updateCurrentUser = async (req, res) => {
+  const { name } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { name },
+    { new: true, runValidators: true },
+  );
+
+  res.status(200).json({ data: user });
+};
+
+/** Оновлює аватар поточного юзера: нове фото в Cloudinary, старе — видаляємо. */
+export const updateUserAvatar = async (req, res) => {
+  if (!req.file) {
+    throw createHttpError(400, 'Avatar file is required');
+  }
+
+  const previousAvatar = req.user.avatar;
+  const avatar = await saveFileToCloudinary(req.file, 'relax-map/avatars');
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    { new: true },
+  );
+
+  // нове фото вже в базі — прибираємо старе (дефолтний аватар не з Cloudinary, його не чіпаємо)
+  try {
+    await deleteImageFromCloudinary(previousAvatar);
+  } catch {
+    // не вдалося видалити старе фото — не причина відповідати помилкою
+  }
+
+  res.status(200).json({ data: user });
+};
 
 export const getUserById = async (req, res) => {
   const { userId } = req.params;
