@@ -67,16 +67,18 @@ const getLocationRate = async (locationId) => {
 };
 
 export const createFeedback = async (req, res, next) => {
+  let createdFeedback = null;
+
   try {
     const { locationId, userName, rate, description } = req.body;
 
     const location = await Location.findById(locationId);
     if (!location) {
-      throw createHttpError(404, 'Локацію не знайдено');
+      throw createHttpError(404, 'Location not found');
     }
 
-    // відгук видно одразу: сторінка локації оновлює список і рейтинг без модерації
-    const feedback = await Feedback.create({
+    // 1. Створюємо відгук
+    createdFeedback = await Feedback.create({
       locationId,
       owner: req.user._id,
       userName,
@@ -85,16 +87,22 @@ export const createFeedback = async (req, res, next) => {
       status: FEEDBACK_CONFIG.DEFAULT_STATUS,
     });
 
-    // загальний рейтинг локації перераховуємо разом із додаванням відгуку
+    // 2. Загальний рейтинг локації перераховуємо разом із додаванням відгуку
     const locationRate = await getLocationRate(location._id);
 
+    // 3. Дописуємо id відгуку та оновлюємо рейтинг у локації
     await Location.findByIdAndUpdate(locationId, {
-      $push: { feedbacksId: feedback._id },
+      $push: { feedbacksId: createdFeedback._id },
       $set: { rate: locationRate },
     });
 
-    res.status(201).json({ data: feedback });
+    res.status(201).json({ data: createdFeedback });
   } catch (error) {
+    // Відкат: якщо відгук встиг створитися, але далі сталася помилка — видаляємо його
+    if (createdFeedback?._id) {
+      await Feedback.findByIdAndDelete(createdFeedback._id).catch(() => {});
+    }
+
     next(error);
   }
 };
